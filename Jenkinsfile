@@ -9,8 +9,8 @@ pipeline {
         stage('Run') {
             steps {
                 script {
-                    // 先停止之前的进程
-                    sh 'ps -ef | grep java | grep -v grep | awk \'{print $2}\' | xargs kill -9'
+                    // 先停止之前启动过的jar包, 位置是target目录下
+                    sh 'ps -ef | grep java | grep target | grep -v grep | awk \'{print $2}\' | xargs kill -9'
                     // 启动新的进程
                     def jarName = sh(
                         script: "ls target/*.jar | head -1 | xargs basename",

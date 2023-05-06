@@ -18,15 +18,4 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            script {
-                def runningPid = sh(
-                    script: "ps aux | grep 'java -jar' | grep -v grep | awk '{print \$2}'",
-                    returnStdout: true
-                ).trim()
-                sh "kill ${runningPid}"
-            }
-        }
-    }
 }

@@ -1,24 +1,28 @@
 pipeline {
     agent any
     stages {
-        stage('Build') {
+stage('Build') {
             steps {
-                sh 'mvn clean package'
+                echo 'Building..'
+                // 使用mvnw命令构建项目
+                sh 'mvnw clean package'
             }
         }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+                // 使用mvnw命令测试项目
+                sh 'mvnw test'
+            }
+        }
+        // 运行项目
         stage('Run') {
             steps {
-                script {
-                    // 先停止之前启动过的jar包, 位置是target目录下
-                    sh 'ps -ef | grep java | grep target | grep -v grep | awk \'{print $2}\' | xargs kill -9'
-                    // 启动新的进程
-                    def jarName = sh(
-                        script: "ls target/*.jar | head -1 | xargs basename",
-                        returnStdout: true
-                    ).trim()
-                    // 后台启动, 并且在Jenkins退出之后, 依然可以继续运行
-                    sh "nohup java -jar target/${jarName} &"
-                }
+                echo 'Running..'
+                // 先结束上一次使用mvnw命令运行的项目
+                sh 'mvnw spring-boot:stop'
+                // 再使用mvnw命令运行项目, 并且保持后台运行
+                sh 'mvnw spring-boot:start'
             }
         }
     }
